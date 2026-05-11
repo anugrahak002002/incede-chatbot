@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Logs – INCEDE AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-black min-h-screen">
+
+  <!-- NAVBAR -->
+  <nav class="w-full flex items-center justify-between px-10 py-6 border-b bg-white shadow-sm sticky top-0 z-40">
+    <a href="/" class="text-2xl font-bold tracking-wide">INCEDE</a>
+    <span class="text-sm text-gray-400 font-medium">Session Logs</span>
+  </nav>
+
+  <div class="max-w-6xl mx-auto px-6 py-10">
+
+    <div class="flex items-center justify-between mb-8">
+      <h1 class="text-3xl font-bold">All Sessions</h1>
+      <span class="text-sm text-gray-400">{{ total }} total &nbsp;·&nbsp; Page {{ page }} of {{ total_pages }}</span>
+    </div>
+
+    {% if sessions %}
+
+    <!-- TABLE -->
+    <div class="bg-white rounded-2xl border shadow-sm overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="bg-gray-100 text-gray-500 uppercase text-xs tracking-wider">
+          <tr>
+            <th class="px-6 py-4 text-left">Session ID</th>
+            <th class="px-6 py-4 text-left">Name</th>
+            <th class="px-6 py-4 text-left">Email</th>
+            <th class="px-6 py-4 text-left">Phone</th>
+            <th class="px-6 py-4 text-left">Status</th>
+            <th class="px-6 py-4 text-left">Started At</th>
+            <th class="px-6 py-4 text-left">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          {% for s in sessions %}
+          <tr class="hover:bg-gray-50 transition">
+            <td class="px-6 py-4 font-mono text-xs text-gray-400">
+              #{{ s.id }}&nbsp;
+              <span class="text-gray-300">{{ s.session_uuid[:8] }}…</span>
+            </td>
+            <td class="px-6 py-4 font-medium">{{ s.name or '—' }}</td>
+            <td class="px-6 py-4 text-gray-600">{{ s.email or '—' }}</td>
+            <td class="px-6 py-4 text-gray-600">{{ s.phone or '—' }}</td>
+            <td class="px-6 py-4">
+              <span class="px-3 py-1 rounded-full text-xs font-semibold
+                {% if s.status == 'completed' %}bg-green-100 text-green-700
+                {% else %}bg-yellow-100 text-yellow-700{% endif %}">
+                {{ s.status }}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-gray-400 text-xs">
+              {{ s.started_at.strftime('%d %b %Y, %H:%M') }}
+            </td>
+            <td class="px-6 py-4">
+              <a href="/session/{{ s.id }}"
+                 class="px-4 py-2 rounded-xl bg-black text-white text-xs font-medium hover:scale-105 transition inline-block">
+                View
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="flex items-center justify-center gap-2 mt-8">
+
+      {% if page > 1 %}
+      <a href="/logs?page={{ page - 1 }}"
+         class="px-4 py-2 rounded-xl border text-sm hover:bg-black hover:text-white transition">
+        ← Prev
+      </a>
+      {% else %}
+      <span class="px-4 py-2 rounded-xl border text-sm text-gray-300 cursor-not-allowed">← Prev</span>
+      {% endif %}
+
+      {% for p in range(1, total_pages + 1) %}
+        {% if p == page %}
+        <span class="px-4 py-2 rounded-xl bg-black text-white text-sm font-medium">{{ p }}</span>
+        {% else %}
+        <a href="/logs?page={{ p }}"
+           class="px-4 py-2 rounded-xl border text-sm hover:bg-black hover:text-white transition">
+          {{ p }}
+        </a>
+        {% endif %}
+      {% endfor %}
+
+      {% if page < total_pages %}
+      <a href="/logs?page={{ page + 1 }}"
+         class="px-4 py-2 rounded-xl border text-sm hover:bg-black hover:text-white transition">
+        Next →
+      </a>
+      {% else %}
+      <span class="px-4 py-2 rounded-xl border text-sm text-gray-300 cursor-not-allowed">Next →</span>
+      {% endif %}
+
+    </div>
+
+    {% else %}
+    <div class="text-center py-24 text-gray-400">
+      <p class="text-5xl mb-4">📭</p>
+      <p class="text-lg">No sessions yet.</p>
+    </div>
+    {% endif %}
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Session #{{ session.id }} – INCEDE AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-black min-h-screen">
+
+  <!-- NAVBAR -->
+  <nav class="w-full flex items-center justify-between px-10 py-6 border-b bg-white shadow-sm sticky top-0 z-40">
+    <a href="/" class="text-2xl font-bold tracking-wide">INCEDE</a>
+    <a href="/logs" class="text-sm text-gray-500 hover:text-black transition">← Back to Logs</a>
+  </nav>
+
+  <div class="max-w-4xl mx-auto px-6 py-10 space-y-8">
+
+    <!-- SESSION HEADER -->
+    <div class="flex items-start justify-between">
+      <div>
+        <h1 class="text-3xl font-bold">Session #{{ session.id }}</h1>
+        <p class="text-xs text-gray-400 font-mono mt-1">UUID: {{ session.session_uuid }}</p>
+      </div>
+      <span class="px-4 py-2 rounded-full text-sm font-semibold mt-1
+        {% if session.status == 'completed' %}bg-green-100 text-green-700
+        {% else %}bg-yellow-100 text-yellow-700{% endif %}">
+        {{ session.status }}
+      </span>
+    </div>
+
+    <!-- COLLECTED DATA -->
+    <div class="bg-white rounded-2xl border shadow-sm p-6">
+      <h2 class="text-lg font-bold mb-5">Collected Data</h2>
+      <div class="grid grid-cols-2 gap-6 text-sm">
+
+        <div class="space-y-1">
+          <p class="text-xs text-gray-400 uppercase tracking-wider">Name</p>
+          <p class="font-semibold text-base">{{ session.name or '—' }}</p>
+        </div>
+
+        <div class="space-y-1">
+          <p class="text-xs text-gray-400 uppercase tracking-wider">Phone</p>
+          <p class="font-semibold text-base">{{ session.phone or '—' }}</p>
+        </div>
+
+        <div class="space-y-1">
+          <p class="text-xs text-gray-400 uppercase tracking-wider">Email</p>
+          <p class="font-semibold text-base">{{ session.email or '—' }}</p>
+        </div>
+
+        <div class="space-y-1">
+          <p class="text-xs text-gray-400 uppercase tracking-wider">Started At</p>
+          <p class="font-semibold text-base">{{ session.started_at.strftime('%d %b %Y, %H:%M:%S') }}</p>
+        </div>
+
+        <div class="col-span-2 space-y-1">
+          <p class="text-xs text-gray-400 uppercase tracking-wider">Description</p>
+          <p class="font-semibold text-base">{{ session.description or '—' }}</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CONVERSATION -->
+    <div class="bg-white rounded-2xl border shadow-sm p-6">
+      <h2 class="text-lg font-bold mb-6">Conversation
+        <span class="text-sm font-normal text-gray-400 ml-2">{{ messages|length }} messages</span>
+      </h2>
+
+      {% if messages %}
+      <div class="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+        {% for msg in messages %}
+
+        <div class="flex {% if msg.role == 'user' %}justify-end{% else %}justify-start{% endif %}">
+          <div class="max-w-[75%]">
+
+            <!-- role label -->
+            <p class="text-xs text-gray-400 mb-1 {% if msg.role == 'user' %}text-right{% endif %}">
+              {% if msg.role == 'user' %}User{% elif msg.role == 'error' %}⚠ Error{% else %}Bot{% endif %}
+              &nbsp;·&nbsp; {{ msg.created_at.strftime('%H:%M:%S') }}
+            </p>
+
+            <!-- bubble -->
+            <div class="px-4 py-3 rounded-2xl text-sm leading-relaxed
+              {% if msg.role == 'user' %}bg-black text-white
+              {% elif msg.role == 'error' %}bg-red-50 border border-red-200 text-red-700
+              {% else %}bg-gray-100 text-black border{% endif %}">
+              {{ msg.message }}
+            </div>
+
+          </div>
+        </div>
+
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-gray-400 text-sm">No messages recorded.</p>
+      {% endif %}
+    </div>
+
+  </div>
+</body>
+</html>
